@@ -1,6 +1,6 @@
 #include "Stack.h"
 
-using namespace StackLib {
+using namespace StackLib;
 
     void * safe_calloc(size_t num, size_t size) {
         return calloc(num, size);
@@ -60,4 +60,4 @@ using namespace StackLib {
 
         return stack_[size_ - 1];
     }
-}
+
