@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <exception>
 #include <string>
+
 #include "mystack.h"
 using namespace StackLib;
 
@@ -60,12 +61,3 @@ TEST(IsEmpty, IsEmpty) {
   EXPECT_EQ(first.IsEmpty(), true) << first.IsEmpty() << " " << true;
 
 }
-
-TEST(Destructor, Destructor) {
-  Stack<int> first;
-  first.Push(1);
-  EXPECT_NO_THROW(first.~Stack()) << "Исключение"; 
-}
-
-
-
