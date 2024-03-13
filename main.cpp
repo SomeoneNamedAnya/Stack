@@ -1,40 +1,39 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <vector>
+#include <map>
+#include <stdexcept>
 #include "mystack.h"
+#include "parser.h"
+#include "command.h"
 using namespace StackLib;
 
-/*void f(Stack<int> q) {
-    return;
-}*/
+
 int main(){
-    /*Stack <int> my_stack;
-    my_stack.Push(1);
-    my_stack.Push(2);
-
-    std::cout << my_stack.Top() << "\n";
-    my_stack.Pop();
-    std::cout << my_stack.Top() << "\n";
-    my_stack.Pop();
-    my_stack.Push(3);
-    std::cout << my_stack.Top() << "\n";
     
-    Stack<int> second, third;
-    second = my_stack;
-    third = std::move(my_stack);
-    std::cout << second.Top() << "\n";
+    std::cout << "put link:\n";
+    std::string link = "code_1.txt";
+    //std::cin >> link;
+    std::ifstream file;
+    file.open(link);
+    std::vector<Token> tokens = file_parser(file);
+    std::cout << "put link:\n";
+    Stack<CommandLib::Element> * stack = nullptr;
+    std::map<std::string, int> map_reg;
+    std::vector<CommandLib::Command *> vec_command;
 
-    std::cout << third.Top() << "\n";
-   // f(second);
-    std::cout << second.Top() << "\n";*/
-    Stack<std::string> str_stack;
-    str_stack.Push("qwe");
-    str_stack.Push("aaa");
-    str_stack.Push("qqq");
-
-    while (!str_stack.IsEmpty()) {
-        std::cout << str_stack.Top() << "\n";
-        str_stack.Pop();
+    build_vector_command(tokens, vec_command, map_reg);
+    try{
+        for (int i = 0; i < vec_command.size(); i++) {
+            //std::cout << i << std::endl;
+            vec_command[i] -> execute(stack);
+        }
+    } catch (char const* error) {
+        std::cout << error;
     }
-    str_stack.Pop();
+
+
+    
     return 0;
 }
