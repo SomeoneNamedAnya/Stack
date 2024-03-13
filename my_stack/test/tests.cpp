@@ -61,3 +61,33 @@ TEST(IsEmpty, IsEmpty) {
   EXPECT_EQ(first.IsEmpty(), true) << first.IsEmpty() << " " << true;
 
 }
+
+TEST(Copy_ctr, Eq) {
+  Stack<int> first;
+  first.Push(123);
+  first.Push(123);
+  Stack<int> second;
+  EXPECT_NO_THROW(second = first) << "Исключение"; 
+}
+
+TEST(Copy_ctr, Constructor) {
+  Stack<int> first;
+  first.Push(123);
+  first.Push(123);
+  EXPECT_NO_THROW(Stack<int> second = first) << "Исключение"; 
+}
+
+TEST(Move_ctr, Eq) {
+  Stack<int> first;
+  first.Push(123);
+  first.Push(123);
+  Stack<int> second;
+  EXPECT_NO_THROW(second = std::move(first)) << "Исключение"; 
+}
+
+TEST(Move_ctr, Constructor) {
+  Stack<int> first;
+  first.Push(123);
+  first.Push(123);
+  EXPECT_NO_THROW(Stack<int> second = std::move(first)) << "Исключение"; 
+}

@@ -1,3 +1,5 @@
+#ifndef MY_STACK
+#define MY_STACK
 #include <stdlib.h>
 #include <iostream>
 #include <memory.h>
@@ -12,38 +14,36 @@ namespace StackLib{
             Stack() {
                 size_ = 0;
                 capacity_ = 1;
-                stack_ = (T *)safe_calloc(1, sizeof(T));
+                stack_ = new T[capacity_];
             }
 
             ~Stack() {
-                free(stack_);
+                delete[] stack_;                
             }
 
             Stack(const Stack<T>& other) {
                 size_ = other.size_;
                 capacity_ = other.capacity_;
-                stack_ = (T*)safe_calloc(1, sizeof(T));
+                stack_ = new T[capacity_];
                 memcpy(stack_, other.stack_, sizeof(T) * capacity_);        
             }
 
-            Stack(const Stack<T>&& other) {
-                size_ = std::move(other.size_);
-                capacity_ = std::move(other.capacity_);
-                std::move(other.stack_, other.stack_ + other.capacity_, stack_); 
+            Stack(Stack<T>&& other) {
+                swap(*this, other);
+                other.stack_ = nullptr;
             }
 
             Stack<T>& operator=(const Stack<T>& other) {
                 size_ = other.size_;
                 capacity_ = other.capacity_;
-                stack_ = (T*)safe_calloc(1, sizeof(T));
+                stack_ = new T[capacity_];
                 memcpy(stack_, other.stack_, sizeof(T) * capacity_);
                 return *this;
             }
             
             Stack<T>& operator=(Stack<T>&& other) {
-                size_ = std::move(other.size_);
-                capacity_ = std::move(other.capacity_);
-                std::move(other.stack_, other.stack_ + other.capacity_, stack_); 
+                swap(*this, other);
+                other.stack_ = nullptr;
                 return *this;
             }
 
@@ -55,10 +55,15 @@ namespace StackLib{
                 return;
             }
 
+            // T&&
+            // const T&
             void Push(T num) {
                 if (size_ == capacity_) {
+                    T * new_stack = new T[capacity_ * 2];
+                    memcpy(new_stack, stack_, sizeof(T) * capacity_);
+                    std::swap(new_stack, stack_);
                     capacity_ *= 2;
-                    stack_ = (T *)safe_realloc(stack_, capacity_, sizeof(T));
+                    delete[] new_stack;
                 }
                 stack_[size_] = num;
                 size_ += 1;
@@ -80,12 +85,11 @@ namespace StackLib{
             int capacity_;
             T * stack_;
 
-            void * safe_calloc(std::size_t num, std::size_t size) {
-                return calloc(num, size);
-            }
-
-            void * safe_realloc(T * ptr, std::size_t num, std::size_t size) {
-                return realloc(ptr, num * size);
+            friend void swap(Stack & first, Stack & second) {
+                std::swap(first.size_, second.size_);
+                std::swap(first.capacity_, second.capacity_);
+                std::swap(first.stack_, second.stack_);
             }
     };
 }
+#endif
