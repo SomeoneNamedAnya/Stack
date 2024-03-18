@@ -1,0 +1,38 @@
+FUNC :
+    PUSHR COUNT
+    PUSHR N
+    JB RETURN2
+
+    PUSHR COUNT
+    PUSHR COUNT
+    PUSH 1
+    ADD
+    POPR COUNT
+
+    CALL FUNC
+    JMP RETURN1
+
+
+RETURN1 :
+    PUSHR ANS
+    MUL
+    POPR ANS
+RETURN2 :
+    RET
+
+BEGIN
+
+    IN
+    POPR N
+
+    PUSH 1
+    POPR ANS
+
+    PUSH 1
+    POPR COUNT
+
+    CALL FUNC
+    PUSHR ANS
+    OUT
+
+END
