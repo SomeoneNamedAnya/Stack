@@ -1,0 +1,41 @@
+
+BEGIN
+    IN
+    POPR A
+
+    PUSH 1
+    POPR COUNT
+
+    PUSH 0
+    POPR ANS
+
+    PUSHR A
+    PUSH 0
+    JA SECOND
+
+    PUSH 1
+    POPR ANS
+
+    IF : 
+        PUSHR A
+        PUSHR COUNT 
+
+        JB FIRST
+        JMP SECOND
+    FIRST :
+
+        PUSHR COUNT
+        PUSH 1
+        ADD
+        POPR COUNT
+
+        PUSHR COUNT
+        PUSHR ANS
+        MUL
+        POPR ANS
+        JMP IF
+        
+    SECOND :
+        PUSHR ANS
+        OUT
+END
