@@ -1,0 +1,38 @@
+FUNC :
+
+    PUSHR COUNT
+    PUSHR CUR
+
+    JEQ RETURN
+
+    PUSHR FIRST
+    OUT
+    PUSHR FIRST
+    PUSHR SECOND
+    ADD
+    PUSHR SECOND
+    POPR FIRST
+    POPR SECOND
+
+    PUSHR CUR
+    PUSH 1
+    ADD
+    POPR CUR
+
+    CALL FUNC
+    JMP RETURN
+
+RETURN :
+    RET
+
+BEGIN
+    PUSH 40
+    POPR COUNT
+    PUSH 0
+    POPR FIRST
+    PUSH 1 
+    POPR SECOND
+    PUSH 0
+    POPR CUR
+    CALL FUNC
+END
