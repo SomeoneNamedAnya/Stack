@@ -4,8 +4,8 @@
 int main(){
     
     std::cout << "put link:\n";
-    std::string link = "code_1.txt";
-
+    std::string link;
+    std::cin >> link;
     std::ifstream file;
     file.open(link);
 try{
