@@ -9,11 +9,9 @@ int main(){
     std::ifstream file;
     file.open(link);
 try{
-    std::vector<Token> tokens = file_parser(file);
-    AllMemory all;
-    std::vector<Command *> vec_command;
-    
-    
+        std::vector<Token> tokens = file_parser(file);
+        AllMemory all;
+        std::vector<Command *> vec_command;
         int begin = build_vector_command(tokens, vec_command, all);
         all.SetPos(begin);
     
