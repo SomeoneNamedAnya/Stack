@@ -21,7 +21,6 @@ try{
             Step(vec_command, all);
         }
     }  catch (ParserExeption& error) {
-        std::cout << "Error!!!!!!!!!!!\n";
         std::cout << error.what();
     } catch (StackLib::MyStackExeption& error) {
         std::cout << error.what();
