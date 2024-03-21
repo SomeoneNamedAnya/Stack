@@ -8,27 +8,19 @@
 #include <exception>
 #include <string>
 #include "mystack.h"
+#include "exception.h"
 
-
-class CommandExeption {
-    public:
-        CommandExeption(const std::string& message) : message_(message){}
-        virtual std::string what() {
-            return message_;
-        }
-    private:
-        std::string message_;
-};
 
 class Command;
 
 class AllMemory {
     public:
         bool start_ = false;
-        std::vector<StackLib::Stack<int>> stack_;
+        StackLib::Stack<int> stack_;
         std::map<std::string, int> reg_;
         std::map<std::string, int> func_;
         std::vector<int> cur_pos_;
+        std::vector<int> stack_pos_;
 
         void SetPos(int pos) {
             cur_pos_.push_back(pos);
@@ -40,24 +32,28 @@ class AllMemory {
 
         void Start() {
             start_ = true;
-            stack_.push_back(StackLib::Stack<int>());
         }
 
         void End() {
             start_ = false;
-            stack_.clear();
         }
 
         void Push(int value) {
-            stack_[stack_.size() - 1].Push(value);
+            stack_.Push(value);
         }
 
         void Pop() {
-            stack_[stack_.size() - 1].Pop();
+            stack_.Pop();
         }
 
         int Top() {
-            return stack_[stack_.size() - 1].Top();
+            return stack_.Top();
+        }
+
+        void AddReg(std::string reg) {
+            if (reg_.find(reg) == reg_.end()) {
+                reg_[reg] = 0;
+            }
         }
 
         void WriteReg(std::string reg, int value) {
@@ -70,7 +66,7 @@ class AllMemory {
 
         void PushLable(std::string label, int pos) {
             if (func_.find(label) != func_.end()) {
-                throw CommandExeption{"The function " + label + " is already determined."};
+                throw CommandException{"The function " + label + " is already determined."};
             }
             func_[label] = pos;
         }
@@ -81,12 +77,19 @@ class AllMemory {
 
         void Call(std::string label) {
             cur_pos_.push_back(func_[label] - 1);
-            stack_.push_back(stack_.back());
+            stack_pos_.push_back(stack_.Size());
         }
 
         void Ret() {
             cur_pos_.pop_back();
-            stack_.pop_back();
+            while (stack_.Size() > stack_pos_.back()) {
+                stack_.Pop();
+            }
+
+            while (stack_.Size() < stack_pos_.back()) {
+                stack_.Push(0);
+            }
+            stack_pos_.pop_back();
         }
 
         bool CanStep(int size) {
@@ -101,16 +104,13 @@ class Command {
 };
 
 
-void Step(std::vector<Command * > & vec_command, AllMemory & all) {
-    vec_command[all.cur_pos_.back()] -> execute(all);
-    all.cur_pos_[all.cur_pos_.size() - 1] += 1;
-}
+
 
 class Begin: public Command {
     public:
         void execute(AllMemory & all) override {
             if (all.IsStart()) {
-                throw CommandExeption{"The process has already been started"};
+                throw CommandException{"The process has already been started"};
             }
             all.Start();
         }
@@ -123,7 +123,7 @@ class End: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process has already been finished"};
+                throw CommandException{"The process has already been finished"};
             }
            all.End();
         }
@@ -137,7 +137,7 @@ class Push: public Command {
         Push(int value):value_(value) {}
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             all.Push(value_);
             
@@ -153,7 +153,7 @@ class Pop: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             all.Pop();
             
@@ -168,7 +168,7 @@ class PushR: public Command {
         PushR(std::string & reg): reg_(reg) {}
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             
             all.Push(all.GetReg(reg_));
@@ -186,7 +186,7 @@ class PopR: public Command {
         PopR(std::string reg): reg_(reg) {}
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             all.WriteReg(reg_, all.Top());
             all.Pop();
@@ -203,7 +203,7 @@ class Add: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             int first = all.Top();
             all.Pop();
@@ -221,7 +221,7 @@ class Sub: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             int first = all.Top();
             all.Pop();
@@ -239,7 +239,7 @@ class Mul: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             int first = all.Top();
             all.Pop();
@@ -257,7 +257,7 @@ class Div: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             int first = all.Top();
             all.Pop();
@@ -275,7 +275,7 @@ class Out: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             int first = all.Top();
             all.Pop();
@@ -290,7 +290,7 @@ class In: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             int value;
             std::cin >> value;
@@ -306,7 +306,7 @@ class Jump: public Command {
         Jump(std::string type, std::string label): type_(type), label_(label) {}
         void execute(AllMemory & all) override {
             if (!all.IsStart()) {
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
 
             if (type_ == "JMP") {
@@ -378,7 +378,7 @@ class Call: public Command {
         Call(std::string & label): label_(label) {}
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             
             all.Call(label_);
@@ -395,7 +395,7 @@ class Ret: public Command {
     public:
         void execute(AllMemory & all) override {
             if (!all.IsStart()) { 
-                throw CommandExeption{"The process is not started"};
+                throw CommandException{"The process is not started"};
             }
             
             all.Ret();
