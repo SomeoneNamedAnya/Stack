@@ -7,10 +7,10 @@ set(HEADER_LIB ./include/mystack.h)
 
 add_library(mystack ${SOURCE_LIB} ${HEADER_LIB})
 # target_include_directories(mystack PUBLIC MyStack)
-
+target_link_libraries(mystack)
 # add_compile_options("-O2")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
