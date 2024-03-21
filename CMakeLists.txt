@@ -12,8 +12,6 @@ target_link_libraries(main mystack)
 target_include_directories(main PUBLIC
                           "my_stack"
                           "my_stack/include"
-                          "parser/include"
-                          "command/include"
                          )
 
 add_compile_options("-O2")
