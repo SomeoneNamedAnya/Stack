@@ -6,7 +6,18 @@
 #include <algorithm>
 #include <exception>
 
-namespace StackLib{
+
+namespace StackLib {
+
+    class MyStackException: public std::exception {
+        public:
+            MyStackException(std::string message) : message_(message.c_str()){}
+            const char * what() const noexcept override;
+        private:
+            const char * message_;
+    };
+
+
     template <typename T>
     class Stack {
         public:
@@ -49,15 +60,13 @@ namespace StackLib{
 
             void Pop() {
                 if (size_ == 0) {
-                    throw "Stack is empty";
+                    throw MyStackException{"Stack is empty"};
                 }
                 size_ -= 1;
                 return;
             }
 
-            // T&&
-            // const T&
-            void Push(T num) {
+            void Push(auto num) {
                 if (size_ == capacity_) {
                     T * new_stack = new T[capacity_ * 2];
                     memcpy(new_stack, stack_, sizeof(T) * capacity_);
@@ -71,11 +80,22 @@ namespace StackLib{
 
             T Top() {
                 if (size_ == 0) {
-                    throw "Stack is empty";
+                    throw MyStackException{"Stack is empty"};
                 }
                 return stack_[size_ - 1];
             }
 
+            int Size() {
+                return size_;
+            }
+
+            const T& Top() const {
+                if (size_ == 0) {
+                    throw MyStackException{"Stack is empty"};
+                }
+                return stack_[size_ - 1];
+            }
+        
             bool IsEmpty() {
                 return (int)size_ == 0;
             }
