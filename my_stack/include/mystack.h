@@ -11,10 +11,10 @@ namespace StackLib {
 
     class MyStackException: public std::exception {
         public:
-            MyStackException(std::string message) : message_(message.c_str()){}
+            MyStackException(std::string message) : message_(message){}
             const char * what() const noexcept override;
         private:
-            const char * message_;
+            std::string message_;
     };
 
 
